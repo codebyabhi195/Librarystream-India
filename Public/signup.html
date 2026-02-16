@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | StudyStream India</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --ss-blue: #3280f1; --ss-border: #eef1f4; --ss-text: #111827; }
+        body { 
+            margin: 0; font-family: 'Inter', sans-serif; 
+            background: #ffffff; display: flex; 
+            justify-content: center; align-items: center; height: 100vh; 
+        }
+        .signup-card { 
+            width: 100%; max-width: 400px; padding: 40px; 
+            text-align: center; border-radius: 16px;
+        }
+        .logo { font-size: 32px; font-weight: 800; color: var(--ss-blue); margin-bottom: 10px; }
+        h2 { font-size: 24px; margin-bottom: 30px; font-weight: 700; }
+        
+        .form-group { text-align: left; margin-bottom: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #6b7280; margin-bottom: 8px; }
+        
+        input, select { 
+            width: 100%; padding: 12px 16px; border-radius: 10px; 
+            border: 1px solid var(--ss-border); background: #f9fafb;
+            font-size: 14px; outline: none; transition: 0.2s;
+        }
+        input:focus, select:focus { border-color: var(--ss-blue); box-shadow: 0 0 0 3px rgba(50, 128, 241, 0.1); }
+        
+        .btn-signup { 
+            width: 100%; padding: 14px; background: var(--ss-blue); 
+            color: white; border: none; border-radius: 10px; 
+            font-weight: 700; cursor: pointer; font-size: 16px; margin-top: 10px;
+        }
+        .login-link { margin-top: 20px; font-size: 14px; color: #6b7280; }
+        .login-link a { color: var(--ss-blue); text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="signup-card">
+        <div class="logo">S</div>
+        <h2>Create your account</h2>
+        
+        <form id="signupForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="e.g. topper_abhi" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="name@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Aap kis State se hain? 🇮🇳</label>
+                <select id="state" required>
+                    <option value="" disabled selected>Select your state</option>
+                    <option value="UP">Uttar Pradesh</option>
+                    <option value="BR">Bihar</option>
+                    <option value="DL">Delhi</option>
+                    <option value="MH">Maharashtra</option>
+                    <option value="RJ">Rajasthan</option>
+                    <option value="MP">Madhya Pradesh</option>
+                    <option value="WB">West Bengal</option>
+                    <option value="PB">Punjab</option>
+                    <option value="HR">Haryana</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Min. 8 characters" required>
+            </div>
+
+            <button type="submit" class="btn-signup">Sign Up</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="login.html">Log in</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:5000";
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                state: document.getElementById('state').value, // State yahan se jayega
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                if (res.ok) {
+                    alert("Account Created Successfully! 🎉 Ab login kijiye.");
+                    window.location.href = "login.html";
+                } else {
+                    const err = await res.text();
+                    alert("Error: " + err);
+                }
+            } catch (err) {
+                alert("Server connection failed!");
+            }
+        });
+    </script>
+</body>
+</html>

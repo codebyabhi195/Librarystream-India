@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | StudyStream India</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root { --primary: #3280f1; --bg: #f3f4f6; --card: #ffffff; --text: #1f2937; --border: #e5e7eb; --danger: #ef4444; }
+        body.dark-mode { --primary: #3280f1; --bg: #0f172a; --card: #1e293b; --text: #f3f4f6; --border: #334155; }
+        
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; display: flex; overflow: hidden; }
+        
+        /* Layout */
+        .settings-container { display: flex; width: 100%; max-width: 1200px; margin: 0 auto; height: 100%; background: var(--bg); }
+        
+        /* Sidebar Navigation */
+        .settings-nav { width: 250px; padding: 30px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: var(--card); }
+        .nav-title { font-size: 20px; font-weight: 700; margin-bottom: 30px; color: var(--primary); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .nav-item { padding: 12px 15px; margin-bottom: 5px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: #6b7280; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .nav-item:hover { background: var(--bg); color: var(--text); }
+        .nav-item.active { background: #eff6ff; color: var(--primary); font-weight: 600; }
+        body.dark-mode .nav-item.active { background: #1e293b; color: white; border: 1px solid var(--primary); }
+
+        /* Main Content Area */
+        .settings-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .tab-content { display: none; max-width: 700px; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Form Elements */
+        h2 { margin-top: 0; font-size: 22px; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text); opacity: 0.8; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); outline: none; transition: 0.2s; font-family: inherit; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(50, 128, 241, 0.1); }
+        
+        /* Buttons */
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        
+        /* Toggles (Switch) */
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .settings-container { flex-direction: column; }
+            .settings-nav { width: 100%; padding: 15px; flex-direction: row; overflow-x: auto; border-bottom: 1px solid var(--border); border-right: none; }
+            .nav-item { white-space: nowrap; padding: 8px 12px; font-size: 12px; }
+            .settings-content { padding: 20px; }
+        }
+    </style>
+</head>
+<body onload="initSettings()">
+
+    <div class="settings-container">
+        <aside class="settings-nav">
+            <div class="nav-title" onclick="window.location.href='dashboard.html'">⬅ Settings</div>
+            <div class="nav-item active" onclick="showTab('account')">👤 Account</div>
+            <div class="nav-item" onclick="showTab('appearance')">🎨 Appearance</div>
+            <div class="nav-item" onclick="showTab('notifications')">🔔 Notifications</div>
+            <div class="nav-item" onclick="showTab('security')">🔐 Security</div>
+            <div class="nav-item" onclick="showTab('help')">❓ Help & Info</div>
+            <div class="nav-item" style="color: var(--danger); margin-top: auto;" onclick="logout()">🚪 Logout</div>
+        </aside>
+
+        <main class="settings-content">
+            
+            <div id="account" class="tab-content active">
+                <h2>Public Profile</h2>
+                <div class="form-group" style="display: flex; align-items: center; gap: 20px;">
+                    <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border);">
+                    <div>
+                        <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">Change Photo</button>
+                        <input type="file" id="fileInput" hidden accept="image/*" onchange="uploadPic()">
+                        <p style="font-size: 11px; color: grey; margin-top: 5px;">Max size 50KB</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="username">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" disabled style="opacity: 0.6; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label>State (Location Badge)</label>
+                    <select id="state">
+                        <option value="India">Select State</option>
+                        <option value="UP">Uttar Pradesh</option>
+                        <option value="BR">Bihar</option>
+                        <option value="MH">Maharashtra</option>
+                        <option value="RJ">Rajasthan</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="updateProfile()">Save Changes</button>
+            </div>
+
+            <div id="appearance" class="tab-content">
+                <h2>Look & Feel</h2>
+                
+                <div class="toggle-row">
+                    <div>
+                        <strong>Dark Mode</strong>
+                        <div style="font-size: 12px; opacity: 0.7;">Switch between light and dark themes</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <strong>Compact Mode</strong>
+                        <div style="font-size: 12px; opacity: 0.7;">Make the dashboard more dense</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="compactMode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="notifications" class="tab-content">
+                <h2>Notification Preferences</h2>
+                <p style="font-size: 12px; color: orange;">(Note: Email features will work after SMTP setup)</p>
+
+                <div class="toggle-row">
+                    <div><strong>Email Alerts</strong><br><span style="font-size:11px; opacity:0.7;">Receive exam reminders via email</span></div>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                
+                <div class="toggle-row">
+                    <div><strong>Chat Sounds</strong><br><span style="font-size:11px; opacity:0.7;">Play sound on new message</span></div>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+
+                <div class="toggle-row">
+                    <div><strong>Motivational Quotes</strong><br><span style="font-size:11px; opacity:0.7;">Daily notification</span></div>
+                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+            </div>
+
+            <div id="security" class="tab-content">
+                <h2>Login & Security</h2>
+                
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password">
+                </div>
+                <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+
+                <hr style="margin: 30px 0; border: 0; border-top: 1px solid var(--border);">
+                
+                <h3 style="color: var(--danger); font-size: 16px;">Danger Zone</h3>
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: var(--danger);">Delete Account</strong>
+                            <p style="font-size: 12px; margin: 5px 0 0;">Once deleted, your data is gone forever.</p>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteAccount()">Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="help" class="tab-content">
+                <h2>Help & Support</h2>
+                <div style="background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 10px;">
+                    <h3>📞 Contact Support</h3>
+                    <p>Email: <b>help@studystream.in</b></p>
+                    <p>Phone: +91 86510 99414</p>
+                    <hr>
+                    <h3>📚 FAQs</h3>
+                    <details style="margin-bottom: 10px; cursor: pointer;">
+                        <summary><strong>Is this free?</strong></summary>
+                        <p style="font-size: 13px; margin-top: 5px;">Yes, StudyStream is 100% free for students.</p>
+                    </details>
+                    <details style="margin-bottom: 10px; cursor: pointer;">
+                        <summary><strong>How to improve Study Points?</strong></summary>
+                        <p style="font-size: 13px; margin-top: 5px;">Login daily and complete tasks to earn points.</p>
+                    </details>
+                    <p style="text-align: center; margin-top: 20px; font-size: 11px; opacity: 0.5;">Version 1.0.0 | Made with ❤️ in India</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const API = "http://localhost:5000";
+        
+        // --- INIT ---
+        async function initSettings() {
+            // Theme Check
+            if(localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeToggle').checked = true;
+            }
+
+            const token = localStorage.getItem('token');
+            if(!token) return window.location.href = 'login.html';
+
+            try {
+                const res = await fetch(`${API}/profile`, { headers: { 'x-auth-token': token } });
+                const user = await res.json();
+                
+                // Fill Data
+                document.getElementById('username').value = user.username;
+                document.getElementById('email').value = user.email;
+                document.getElementById('state').value = user.state || "India";
+                if(user.profilePic) document.getElementById('profilePreview').src = user.profilePic;
+
+            } catch(e) { console.log(e); }
+        }
+
+        // --- TABS LOGIC ---
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight sidebar item
+            const items = document.querySelectorAll('.nav-item');
+            if(tabId === 'account') items[0].classList.add('active');
+            if(tabId === 'appearance') items[1].classList.add('active');
+            if(tabId === 'notifications') items[2].classList.add('active');
+            if(tabId === 'security') items[3].classList.add('active');
+            if(tabId === 'help') items[4].classList.add('active');
+        }
+
+        // --- FEATURES ---
+        
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        async function updateProfile() {
+            const username = document.getElementById('username').value;
+            const state = document.getElementById('state').value;
+            await fetch(`${API}/update-profile`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'x-auth-token': localStorage.getItem('token') },
+                body: JSON.stringify({ username, state })
+            });
+            alert("Profile Updated Successfully! ✅");
+        }
+
+        function uploadPic() {
+            const file = document.getElementById('fileInput').files[0];
+            if(!file || file.size > 50000) return alert("File too big! (Max 50KB)");
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async function() {
+                document.getElementById('profilePreview').src = reader.result;
+                await fetch(`${API}/upload-pic`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-auth-token': localStorage.getItem('token') }, body: JSON.stringify({ image: reader.result }) });
+            };
+        }
+
+        async function changePassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            if(!newPassword) return alert("Enter a password!");
+            const res = await fetch(`${API}/change-password`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-auth-token': localStorage.getItem('token') }, body: JSON.stringify({ newPassword }) });
+            if(res.ok) { alert("Password Changed! Please Login again."); logout(); }
+        }
+
+        async function deleteAccount() {
+            if(!confirm("⚠️ WARNING: Are you sure you want to delete your account? This cannot be undone.")) return;
+            await fetch(`${API}/delete-account`, { method: 'DELETE', headers: { 'x-auth-token': localStorage.getItem('token') } });
+            logout();
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

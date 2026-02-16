@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Call Test</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f0f0f0; }
+        #video-container { width: 80%; height: 500px; background: white; border: 2px solid #333; }
+        button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: pointer; }
+    </style>
+    <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+</head>
+<body>
+
+    <h2>🎥 Video Call Test</h2>
+    <button onclick="startCall()">Click to Start Call</button>
+    <div id="video-container"></div>
+
+    <script>
+        function startCall() {
+            // Aapki Keys
+            const appID = 702436637; 
+            const serverSecret = "c9859aad8afd20feff7681d4624bd67d";
+            
+            // Random ID generate kar rahe hain test ke liye
+            const roomID = "TestRoom1";
+            const userID = Math.floor(Math.random() * 10000) + "";
+            const userName = "Test User " + userID;
+
+            console.log("Generating Token...");
+            
+            try {
+                const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+                    appID, serverSecret, roomID, userID, userName
+                );
+
+                console.log("Token Generated:", kitToken);
+
+                const zp = ZegoUIKitPrebuilt.create(kitToken);
+                
+                zp.joinRoom({
+                    container: document.querySelector("#video-container"),
+                    scenario: {
+                        mode: ZegoUIKitPrebuilt.VideoConference,
+                    },
+                    showPreJoinView: true, // Ise TRUE rakha hai taaki settings check kar sako
+                });
+                
+                console.log("Join Room function called");
+
+            } catch (error) {
+                console.error("Error starting video:", error);
+                alert("Error: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

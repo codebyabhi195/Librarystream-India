@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Abhishek's Virtual Library</title>
+    <style>
+        body { font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; }
+        .login-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        button { width: 97%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-bottom: 10px; }
+        .signup-btn { background: #28a745; } /* Signup button color */
+        .links { margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2>📚 Library Login</h2>
+        <input type="email" id="email" placeholder="Email (abhishek@example.com)">
+        <input type="password" id="password" placeholder="Password (password123)">
+        
+        <button onclick="handleLogin()">Login & Start Study</button>
+        
+        <button class="signup-btn" onclick="window.location.href='signup.html'">Naya Account Banayein</button>
+        
+        <div class="links">
+            Account nahi hai? <a href="signup.html">Register Karein</a>
+        </div>
+    </div>
+
+    <script>
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // Backend URL setup
+                const response = await fetch('http://localhost:5000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Token save karna dashboard ke liye
+                    localStorage.setItem('token', data.token);
+                    alert("Login Successful! 🎉");
+                    window.location.href = "dashboard.html"; 
+                } else {
+                    alert(data.message || "Login fail ho gaya!");
+                }
+            } catch (error) {
+                console.error("Error details:", error);
+                alert("Server se connect nahi ho pa raha! Check terminal.");
+            }
+        }
+    </script>
+</body>
+</html>

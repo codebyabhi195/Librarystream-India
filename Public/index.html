@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Abhishek's Virtual Library</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 40px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+        input { width: 90%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .book-item { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+
+    <script>
+    // 1. Sabse pehle Security Check
+    const token = localStorage.getItem('token');
+    if (!token) {
+        // Agar token nahi mila, toh user ko Login page par dhakka de do
+        window.location.href = "login.html"; 
+    }
+
+    // 2. Uske baad baaki ka code (jaise fetchBooks etc.)
+    window.onload = fetchBooks;
+    
+    async function fetchBooks() {
+        // ... tumhara purana code
+    }
+</script>
+
+<div class="card">
+    <h2>📚 Abhishek's Virtual Library</h2>
+    <input type="text" id="title" placeholder="Book Title">
+    <input type="text" id="author" placeholder="Author Name">
+    <button onclick="addBook()">Add Book to Library</button>
+
+    <div id="library-display" style="margin-top: 30px;">
+        <h3>Current Collection:</h3>
+        <div id="books-list"></div>
+    </div>
+</div>
+
+<script>
+    // 1. Page load hote hi books dikhao
+    window.onload = fetchBooks;
+
+    async function fetchBooks() {
+        const res = await fetch('/all-books');
+        const books = await res.json();
+        const list = document.getElementById('books-list');
+        list.innerHTML = '';
+        books.forEach(book => {
+            list.innerHTML += `
+                <div class="book-item">
+                    <span><strong>${book.title}</strong> by ${book.author}</span>
+                    <button style="background:red" onclick="deleteBook('${book._id}')">Delete</button>
+                </div>`;
+        });
+    }
+
+    async function addBook() {
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        await fetch('/add-book', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({title, author})
+        });
+        fetchBooks(); // List refresh karo
+    }
+
+    async function deleteBook(id) {
+        await fetch('/del/' + id, { method: 'DELETE' });
+        fetchBooks(); // List refresh karo
+    }
+
+    async function handleLogin() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+        // Token ko browser ki memory mein save karo
+        localStorage.setItem('token', data.token);
+        alert("Login Successful! Chalo Study Room mein.");
+        // Dashboard par bhej do
+        window.location.href = "dashboard.html";
+    } else {
+        alert(data.message || "Login fail ho gaya!");
+    }
+}
+</script>
+</body>
+</html>
+
+
+
