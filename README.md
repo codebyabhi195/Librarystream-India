@@ -1,6 +1,6 @@
-# 📚 StudyStream India - Virtual Library & IT Prep Platform
+# 📚 LibraryStream India - Virtual Library & IT Prep Platform
 
-Welcome to **StudyStream India**, a Full-Stack (MERN) Gamified Virtual Library designed for students, government exam aspirants, and IT placement candidates. 
+Welcome to **LibraryStream India**, a Full-Stack (MERN) Gamified Virtual Library designed for students, government exam aspirants, and IT placement candidates. 
 
 This platform recreates the environment of a real library with live video study rooms, ambient sounds, strict focus modes, and an integrated AI Mentor to help you crack your next big interview!
 
