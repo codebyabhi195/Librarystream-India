@@ -241,7 +241,7 @@ app.delete('/delete-account', auth, async (req, res) => {
 app.post('/ask-ai', auth, async (req, res) => {
     try {
         const userPrompt = req.body.prompt;
-        const API_KEY = "AIzaSyBYpWn8dGlcpbMigBfMxY5vhJBl8Kdmeng"; // Aapki Tested Key
+        const API_KEY = "AIzaSyAFioPBO_UWwkAK3l_95eLXnsA46-bDq3Q"; // Aapki Tested Key
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`;
         const response = await fetch(url, {
